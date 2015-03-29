@@ -1,5 +1,5 @@
-from . import item_list
+from models import Item
 
 
 def list_items():
-    return item_list
+    return Item.query.all()
