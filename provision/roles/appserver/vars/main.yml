@@ -1,8 +1,0 @@
----
-   rootuser: root
-   rootpass: r00tp4ss
-
-   daemon: /home/vagrant/wrapper.sh
-   daemon_opts: ""
-   service_name: Bizness
-   pidfile: /var/run/bizness.pid

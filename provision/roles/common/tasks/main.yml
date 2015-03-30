@@ -19,15 +19,5 @@
      file: path=~/.ssh state=directory
      when: sshcnf.stat.exists == false
 
-   - name: Copy SSH config
-     copy: src=ssh.conf dest=~/.ssh/config
-     when: sshcnf.stat.exists == false
-
    - name: Show stuff
      debug: msg=groups
-
-   - name: Allow Ansible through firewall
-     ufw: proto=tcp port=22 rule=allow
-
-   - name: Block all other ports and enable firewall
-     ufw: state=enabled policy=deny

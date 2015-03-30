@@ -1,3 +1,2 @@
 ---
-- include: appserver.yml
 - include: database.yml

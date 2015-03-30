@@ -1,6 +1,5 @@
 ---
-- hosts: databases
-  user: root
+- hosts: all
   roles:
      - common
      - database

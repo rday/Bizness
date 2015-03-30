@@ -7,103 +7,47 @@
          - postgresql-server-dev-9.3
          - python-psycopg2
 
-   - name: Allow MySQL requests from appservers
-     ufw: proto=tcp port=3306 rule=allow from_ip={{ item }}
-     with_items: groups['appservers']
-
-   - name: Allow MySQL slave replication
-     ufw: proto=tcp port=3306 rule=allow from_ip={{ slave_host }}
-     when: mysql_repl_role == 'master'
-
-   - name: Check for my.cnf
-     stat: path=~/.my.cnf
-     register: mysqlcnf
-
-   - name: Check for populated DB
-     stat: path=~/.dbloaded
-     register: dbloaded
-
-   - name: Create log directory
-     file: path=/var/log/mysql/mysql-bin state=directory owner=mysql
-     when: mysql_repl_role == 'slave'
-
-   - name: Create log directory
-     file: path=/var/log/mysql/mysql-bin/log state=touch owner=mysql
-     when: mysql_repl_role == 'slave'
-
-   - name: Start MySQL
+   - name: Configure Postgres Socket
      sudo: yes
-     service: name=mysql state=started
-
-   - name: Setup MySQL root user
-     mysql_user: name={{ rootuser }} password={{ rootpass }} state=present
-
-   - name: Setup MySQL config
-     template: src=my.cnf.j2 dest=~/.my.cnf
+     sudo_user: postgres
+     copy: src=pg_hba.tmpl dest=/etc/postgresql/9.3/main/pg_hba.conf
      notify:
-        - Restart MySQL
+        - Restart PostgreSQL
 
    - name: Change listen address
      sudo: yes
-     replace: dest=/etc/mysql/my.cnf regexp="= 127.0.0.1" replace="= 0.0.0.0"
+     sudo_user: postgres
+     replace: dest=/etc/postgresql/9.3/main/postgresql.conf regexp="#listen_addresses = 'localhost'" replace="listen_addresses = '0.0.0.0'"
      notify:
-        - Restart MySQL
+        - Restart PostgreSQL
+
+   - name: Start PostgreSQL
+     sudo: yes
+     service: name=postgresql state=started
 
    - name: Create DB
-     mysql_db: name={{dbname}}
-               state=present
+     sudo: yes
+     sudo_user: postgres
+     postgresql_db: name={{dbname}}
+                    encoding='UTF-8'
+                    template='template0'
      register: dbcreated
 
-   - name: Setup Master DB user
-     mysql_user: name={{ dbuser }} password={{ dbpass }} priv={{ dbname }}.*:ALL,GRANT host=% state=present
-     when: mysql_repl_role == 'master'
+   - name: Add DB user
+     sudo: yes
+     sudo_user: postgres
+     postgresql_user: name={{dbuser}}
+                      db={{dbname}}
+                      password={{dbpass}}
+                      state=present
+     when: dbcreated
 
-   - name: Setup Slave DB user
-     mysql_user: name={{ slaveuser }} password={{ slavepass }} priv=*.*:ALL host=% state=present
-     when: mysql_repl_role == 'slave'
-
-   - name: Setup Replication DB user
-     mysql_user: name={{ slaveuser }} password={{ slavepass }} priv=*.*:"REPLICATION SLAVE" host={{ slave_host }} state=present
-     when: mysql_repl_role == 'master'
-
-   - name: Grab test data
-     action: get_url url=https://s3.amazonaws.com/cth-testing/cthsql.gz dest=/tmp/cth_test.sql.gz
-     register: latestdb
-     when: dbloaded.stat.exists == false and mysql_repl_role == 'master'
-
-   - name: Unzip test data
-     shell: gzip -d /tmp/cth_test.sql.gz
-     when: dbloaded.stat.exists == false and mysql_repl_role == 'master'
-
-   - name: Load Test DB
-     shell: mysql -h localhost {{dbname}} < /tmp/cth_test.sql
-     when: dbloaded.stat.exists == false and mysql_repl_role == 'master'
-
-   - name: Remove test data
-     file: path=/tmp/cth_test.sql state=absent
-     when: dbloaded.stat.exists == false and mysql_repl_role == 'master'
-
-   - name: Set dbloaded flag
-     file: path=~/.dbloaded state=touch
-
-   - name: Setup Replication
-     template: src=root.my.cnf.j2 dest=/etc/mysql/conf.d/replication.cnf
-     notify:
-        - Restart MySQL
-
-   - name: Is slave configured
-     when: mysql_repl_role == 'slave'
-     mysql_replication: mode=getslave
-     register: slave
-     ignore_errors: true
-
-   - name: Setup master
-     when: mysql_repl_role == 'slave' and slave|failed
-     mysql_replication: mode=changemaster master_host={{ master_host }} master_user={{ slaveuser }} master_password={{ slavepass }}
-     register: changedmaster
-     notify:
-        - Restart MySQL
-
-   - name: Start slave
-     when: mysql_repl_role == 'slave' and slave|failed and changedmaster
-     mysql_replication: mode=startslave
+   - name: Give user privs
+     sudo: yes
+     sudo_user: postgres
+     postgresql_privs: >
+       db={{dbname}}
+       privs=ALL
+       state=present
+       objs=ALL_IN_SCHEMA
+       role={{dbuser}}

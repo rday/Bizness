@@ -1,5 +1,0 @@
----
-- hosts: appservers
-  roles:
-     - common
-     - appserver
