@@ -1,0 +1,13 @@
+---
+   dbname: cthnew
+   dbuser: cth
+   dbpass: cthp4ss!
+
+   master_server_id: 1
+   slave_server_id: 2
+
+   slaveuser: cth_slave
+   slavepass: 5$&B#yvuJdb*
+
+   rootuser: root
+   rootpass: r00tp4ss

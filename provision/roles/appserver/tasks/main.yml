@@ -1,0 +1,33 @@
+---
+   - name: Install packages
+     sudo: yes
+     apt: pkg={{ item }} state=installed update_cache=yes
+     with_items:
+         - python-dev
+         - python-virtualenv
+         - python-setuptools
+         - python-psycopg2
+
+   - name: Allow WSGI access from router
+     ufw: proto=tcp port=10001 rule=allow from_ip={{ router }}
+
+   - name: Allow web access
+     ufw: proto=tcp port=80 rule=allow
+     when: inventory_hostname == router
+
+   - name: Add Nginx config
+     sudo: yes
+     action: template src=service dest=/etc/init.d/cth mode=0751
+
+   - name: Create VirtEnv
+     shell: virtualenv ~/venv
+
+   - name: Install Reqs
+     pip: virtualenv=~/venv requirements=/vagrant/requirements.txt
+
+   - name: Add wrapper
+     copy: src=wrapper.sh dest=/home/vagrant/wrapper.sh mode=0755
+
+   - name: Add Bizness service
+     sudo: yes
+     action: template src=service dest=/etc/init.d/bizness mode=0751
