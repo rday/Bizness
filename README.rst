@@ -51,3 +51,11 @@ the world.
 We will keep a template version of our config file. This will give new developers something
 to copy locally, while keeping our secrets hidden.
 
+
+Second Iteration
+================
+
+This iteration we add a simple database. It uses SQLite and only has one table. Still, we've
+got an alembic migration script. By using alembic to document the creation of the database
+in source control, we will be able to rebuild the database without issue when we add our
+production database.
