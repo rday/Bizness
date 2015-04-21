@@ -17,5 +17,4 @@ the Bizness package, it provides one canonical place to deal with data.
 
 from flask.ext.sqlalchemy import SQLAlchemy
 
-
 db = SQLAlchemy()
