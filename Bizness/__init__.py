@@ -15,7 +15,6 @@ if you have a lot of logic in the web route. If the web routes always call
 the Bizness package, it provides one canonical place to deal with data.
 """
 
-from .models import Item
 from flask.ext.sqlalchemy import SQLAlchemy
 
 
