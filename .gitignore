@@ -1,3 +1,4 @@
 config.py
+user_tools/
 *.pyc
 .idea
