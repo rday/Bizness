@@ -10,6 +10,7 @@
          - wget
          - curl
          - ufw
+         - python-pip
 
    - name: Check for ssh config
      stat: path=~/.ssh/config
@@ -21,3 +22,7 @@
 
    - name: Show stuff
      debug: msg=groups
+
+   - name: Install requirements
+     sudo: yes
+     pip: requirements=/vagrant/requirements.txt
