@@ -8,12 +8,13 @@ import config
 from flask import Flask
 from .items import items_bp
 from Bizness import db
-from mixer.backend.flask import mixer
 
 
 app = Flask(__name__)
 app.config.from_object(config)
+
+# Setup our database with the config file loaded
 db.init_app(app)
 
+# Setup our route blueprints
 app.register_blueprint(items_bp)
-mixer.init_app(app)
