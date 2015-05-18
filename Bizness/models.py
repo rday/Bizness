@@ -2,6 +2,31 @@ from . import db
 from datetime import datetime
 
 
+class Task():
+    name = u''
+    description = u''
+    due_due = None
+    item_list = None
+
+    def __init__(self, name, description, due_date=None):
+        self.name = name
+        self.description = description
+        self.due_due = due_date
+        self.item_list = []
+
+    def __str__(self):
+        return u"Task <{}>".format(self.name)
+
+    def add_item(self, task):
+        self.item.append(task)
+
+
+class Item():
+    name = u''
+    description = u''
+    handled = False
+
+
 class Item(db.Model):
     __tablename__ = 'items'
 
