@@ -1,5 +1,11 @@
+"""
+Request Parser from Flask-RESTful
+http://flask-restful.readthedocs.org/en/latest/reqparse.html
+
+Removed Flask and Flask-RESTful dependencies. Errors are always bundled.
+"""
+
 from copy import deepcopy
-from flask import current_app, request
 from werkzeug.datastructures import MultiDict, FileStorage
 from werkzeug import exceptions
 import decimal
@@ -115,7 +121,7 @@ class Argument(object):
 
         try:
             return self.type(value, self.name, op)
-        except TypeError:
+        except TypeError as e:
             try:
                 if self.type is decimal.Decimal:
                     return self.type(str(value), self.name)
@@ -135,11 +141,8 @@ class Argument(object):
         """
         help_str = '(%s) ' % self.help if self.help else ''
         error_msg = ' '.join([help_str, str(error)]) if help_str else str(error)
-        if current_app.config.get("BUNDLE_ERRORS", False) or bundle_errors:
-            msg = {self.name: "%s" % (error_msg)}
-            return error, msg
-
-        raise exceptions.BadRequest(description=error_msg)
+        msg = {self.name: "%s" % (error_msg)}
+        return error, msg
 
     def parse(self, request, bundle_errors=False):
         """Parses argument value(s) from the request, converting according to
@@ -185,13 +188,9 @@ class Argument(object):
                         return self.handle_validation_error(error, bundle_errors)
 
                     if self.choices and value not in self.choices:
-                        if current_app.config.get("BUNDLE_ERRORS", False) or bundle_errors:
-                            return self.handle_validation_error(
-                                ValueError(u"{0} is not a valid choice".format(
-                                    value)), bundle_errors)
-                        self.handle_validation_error(
-                                ValueError(u"{0} is not a valid choice".format(
-                                    value)), bundle_errors)
+                        return self.handle_validation_error(
+                            ValueError(u"{0} is not a valid choice".format(
+                                value)), bundle_errors)
 
                     if name in request.unparsed_arguments:
                         request.unparsed_arguments.pop(name)
@@ -208,9 +207,7 @@ class Argument(object):
                 error_msg = u"Missing required parameter in {0}".format(
                     ' or '.join(friendly_locations)
                 )
-            if current_app.config.get("BUNDLE_ERRORS", False) or bundle_errors:
-                return self.handle_validation_error(ValueError(error_msg), bundle_errors)
-            self.handle_validation_error(ValueError(error_msg), bundle_errors)
+            return self.handle_validation_error(ValueError(error_msg), bundle_errors)
 
         if not results:
             if callable(self.default):
@@ -274,14 +271,12 @@ class RequestParser(object):
 
         return self
 
-    def parse_args(self, req=None, strict=False):
+    def parse_args(self, req, strict=False):
         """Parse all arguments from the provided request and return the results
         as a Namespace
 
         :param strict: if req includes args not in parser, throw 400 BadRequest exception
         """
-        if req is None:
-            req = request
 
         namespace = self.namespace_class()
 
