@@ -11,7 +11,7 @@ class Task(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(64))
     description = db.Column(db.Text)
-    due_due = db.Column(db.TIMESTAMP)
+    due_date = db.Column(db.TIMESTAMP)
 
     @staticmethod
     def from_request(request):
@@ -31,7 +31,7 @@ class Task(db.Model):
         }
 
     def __repr__(self):
-        return u"Task {} <#{}> due {}".format(self.name, self.id, self.due_due.isoformat())
+        return u"Task {} <#{}> due {}".format(self.name, self.id, self.due_date.isoformat())
 
 
 class Item(db.Model):
