@@ -15,20 +15,7 @@ if you have a lot of logic in the web route. If the web routes always call
 the Bizness package, it provides one canonical place to deal with data.
 """
 
-from .models import Item
+from flask.ext.sqlalchemy import SQLAlchemy
 
 
-item_list = [
-    Item(
-        name='Item 1',
-        description='Description 1'
-    ),
-    Item(
-        name='Item 2',
-        description='Description 2'
-    ),
-    Item(
-        name='Item 3',
-        description='Description 3'
-    )
-]
+db = SQLAlchemy()
