@@ -6,5 +6,10 @@ virtualenv .venv
 
 command -v vagrant > /dev/null 2>&1 || { echo "Please install vagrant on your system"; exit 1; }
 
-pip install -r requirements.txt
+echo "Installing Ansible"
+pip install ansible
 vagrant up
+mkdir user_tools
+cp config-template config.py
+echo "Please `vagrant ssh` and start the Flask server:"
+echo "   PYTHONPATH=/vagrant python /vagrant/runserver.py"

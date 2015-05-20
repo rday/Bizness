@@ -51,3 +51,6 @@
        state=present
        objs=ALL_IN_SCHEMA
        role={{dbuser}}
+
+   - name: Populate the database
+     script: DATABASE_URL=postgres://biz:ness@localhost/bizness /vagrant/populate_db.py
