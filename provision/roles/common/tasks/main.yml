@@ -1,0 +1,28 @@
+---
+   - name: Install packages
+     sudo: yes
+     apt: pkg={{ item }} state=installed update_cache=yes
+     with_items:
+         - make
+         - gcc
+         - g++
+         - git
+         - wget
+         - curl
+         - ufw
+         - python-pip
+
+   - name: Check for ssh config
+     stat: path=~/.ssh/config
+     register: sshcnf
+
+   - name: Create ssh dir
+     file: path=~/.ssh state=directory
+     when: sshcnf.stat.exists == false
+
+   - name: Show stuff
+     debug: msg=groups
+
+   - name: Install requirements
+     sudo: yes
+     pip: requirements=/vagrant/requirements.txt

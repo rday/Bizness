@@ -1,0 +1,53 @@
+---
+   - name: Install packages
+     sudo: yes
+     apt: pkg={{ item }} state=installed update_cache=yes
+     with_items:
+         - postgresql-9.3
+         - postgresql-server-dev-9.3
+         - python-psycopg2
+
+   - name: Configure Postgres Socket
+     sudo: yes
+     sudo_user: postgres
+     copy: src=pg_hba.tmpl dest=/etc/postgresql/9.3/main/pg_hba.conf
+     notify:
+        - Restart PostgreSQL
+
+   - name: Change listen address
+     sudo: yes
+     sudo_user: postgres
+     replace: dest=/etc/postgresql/9.3/main/postgresql.conf regexp="#listen_addresses = 'localhost'" replace="listen_addresses = '0.0.0.0'"
+     notify:
+        - Restart PostgreSQL
+
+   - name: Start PostgreSQL
+     sudo: yes
+     service: name=postgresql state=started
+
+   - name: Create DB
+     sudo: yes
+     sudo_user: postgres
+     postgresql_db: name={{dbname}}
+                    encoding='UTF-8'
+                    template='template0'
+     register: dbcreated
+
+   - name: Add DB user
+     sudo: yes
+     sudo_user: postgres
+     postgresql_user: name={{dbuser}}
+                      db={{dbname}}
+                      password={{dbpass}}
+                      state=present
+     when: dbcreated
+
+   - name: Give user privs
+     sudo: yes
+     sudo_user: postgres
+     postgresql_privs: >
+       db={{dbname}}
+       privs=ALL
+       state=present
+       objs=ALL_IN_SCHEMA
+       role={{dbuser}}

@@ -51,3 +51,12 @@ the world.
 We will keep a template version of our config file. This will give new developers something
 to copy locally, while keeping our secrets hidden.
 
+Ansible Iteration
+=================
+
+It's time for a production level database. Consider that we plan to have multiple developers
+on this project. Right now is the best time to setup our workflow to bring new developers
+on board quickly. We have almost zero dependencies. We don't have a lot of configuration.
+It is pretty simple to setup Vagrant and Ansible to give us a reproducible environment.
+Using this environment, we can build our application incrementally. This will let us avoid
+a monolithic migration to Ansible later on.
