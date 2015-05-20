@@ -11,5 +11,9 @@ pip install ansible
 vagrant up
 mkdir user_tools
 cp config-template config.py
-echo "Please `vagrant ssh` and start the Flask server:"
-echo "   PYTHONPATH=/vagrant python /vagrant/runserver.py"
+echo "Installation complete. Please login to the Vagrant system"
+echo "to populate the database and start the development server:"
+echo
+echo "  $ vagrant ssh"
+echo "  $ DATABASE_URL=postgres://biz:ness@localhost/bizness PYTHONPATH=/vagrant python /vagrant/tools/populate_db.py"
+echo "  $ DATABASE_URL=postgres://biz:ness@localhost/bizness PYTHONPATH=/vagrant python /vagrant/runserver.py"

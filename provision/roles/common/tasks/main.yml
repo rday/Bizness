@@ -11,6 +11,7 @@
          - curl
          - ufw
          - python-pip
+         - python-dev
 
    - name: Check for ssh config
      stat: path=~/.ssh/config
