@@ -7,7 +7,7 @@ from config import PAGE_SIZE
 import iso8601
 
 
-items_bp = Blueprint('items_bp', __name__)
+items_bp = Blueprint('items_bp', __name__, url_prefix='/items')
 
 
 @items_bp.route('/')
@@ -25,7 +25,7 @@ def index():
         items_pagination = Item.paginate_by_due_date(last_date, page_size)
 
     items = {
-        'items': [str(item) for item in items_pagination.items]
+        'items': [item.to_dict() for item in items_pagination.items]
     }
 
     response = BizResponse(
