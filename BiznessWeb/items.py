@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, abort
 from werkzeug.exceptions import BadRequest
 from Bizness import db
 from Bizness.models import Item
@@ -25,7 +25,7 @@ def index():
         items_pagination = Item.paginate_by_due_date(last_date, page_size)
 
     items = {
-        'items': [item.to_dict() for item in items_pagination.items]
+        'items': [item.to_dict(exclude=['name']) for item in items_pagination.items]
     }
 
     response = BizResponse(
@@ -60,5 +60,19 @@ def create_item():
             success=False,
             data='An error occurred saving the item'
         )
+
+    return jsonify(response.to_dict())
+
+
+@items_bp.route('/<int:item_id>', methods=['GET'])
+def get_item(item_id):
+    item = Item.query.filter(Item.id == item_id).first()
+    if item is None:
+        abort(404)
+
+    response = BizResponse(
+        success=True,
+        data=item.to_dict()
+    )
 
     return jsonify(response.to_dict())
