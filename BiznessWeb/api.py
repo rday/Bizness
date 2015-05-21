@@ -1,4 +1,21 @@
-from config import PAGE_SIZE
+from flask.ext.login import wraps, current_user
+from flask import jsonify
+
+
+def role_required(roles):
+    def wrapper(fn):
+        @wraps(fn)
+        def decorated_view(*args, **kwargs):
+            if current_user.is_anonymous():
+                response = jsonify(BizResponse(
+                    success=False,
+                    data=None
+                ).to_dict())
+                response.status_code = 401
+                return response
+            return fn(*args, **kwargs)
+        return decorated_view
+    return wrapper
 
 
 class BizResponse():
