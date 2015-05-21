@@ -25,7 +25,7 @@ def index():
         items_pagination = Item.paginate_by_due_date(last_date, page_size)
 
     items = {
-        'items': [item.to_dict(exclude=['name']) for item in items_pagination.items]
+        'items': [item.to_dict() for item in items_pagination.items]
     }
 
     response = BizResponse(
