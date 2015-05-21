@@ -4,3 +4,5 @@ DEBUG=(os.environ.get('DEBUG', '').lower() == 'true')
 SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'sqlite:////path/to/bizness.db')
 
 PAGE_SIZE=5
+
+SECRET_KEY='change me'
