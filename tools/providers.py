@@ -1,3 +1,12 @@
+"""
+https://github.com/joke2k/faker/issues/170 highlights an error with US phone numbers.
+The first example shows a quick patch to fix this bug without relying on an upstream fix.
+
+For fields that aren't present in the Faker package, we can always use lorem ipsum to
+fill in text. But its nice to have more realistic values. The second example demonstrates
+how we can setup providers for our own fields that aren't present in the Faker package.
+(Job actually is, but our provider formats the titles a little different).
+"""
 from Bizness import models
 from BiznessWeb import app, db
 from mixer.backend.flask import Mixer

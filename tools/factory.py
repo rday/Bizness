@@ -1,3 +1,12 @@
+"""
+Very often, you don't want to remove objects from the database. You simply want
+to mark them as inactive so they can be retrieved by the user later. Since most
+objects will have an 'active' field, we can use a factory to generate the field
+instead of registering a handler for each individual model.
+
+This example demonstrates how to use a custom factory to make 20% of our objects
+inactive when they are blended.
+"""
 from random import randint
 from Bizness import models
 from BiznessWeb import app, db

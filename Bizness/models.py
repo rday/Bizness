@@ -177,7 +177,7 @@ class Item(db.Model):
     name = db.Column(db.String(64))
     description = db.Column(db.Text)
     handled = db.Column(db.Boolean, default=False)
-    due_date = db.Column(db.TIMESTAMP)
+    due_date = db.Column(db.TIMESTAMP, nullable=False)
     handled_date = db.Column(db.TIMESTAMP)
 
     task = db.relationship('Task', backref='items')
@@ -230,7 +230,11 @@ class Item(db.Model):
         }
 
     def __repr__(self):
-        return u"Item {} <#{}> due {}".format(self.name, self.id, self.due_date.isoformat())
+        return u"Item {} <#{}> due {} ({} {})".format(self.name,
+                                                      self.id,
+                                                      self.due_date.isoformat(),
+                                                      self.handled,
+                                                      self.handled_date.isoformat() if self.handled_date else None)
 
 
 class User(db.Model):
