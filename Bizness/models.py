@@ -22,6 +22,10 @@ class Task(db.Model):
     due_date = db.Column(db.TIMESTAMP)
 
     @staticmethod
+    def paginate(page, page_size):
+        return Task.query.paginate(page, page_size)
+
+    @staticmethod
     def from_request(request):
         parser = RequestParser()
         parser.add_argument('name', type=str, required=True, help='All items require a name')
@@ -227,3 +231,20 @@ class Item(db.Model):
 
     def __repr__(self):
         return u"Item {} <#{}> due {}".format(self.name, self.id, self.due_date.isoformat())
+
+
+class User(db.Model):
+    __tablename__ = 'users'
+
+    id = db.Column(db.Integer(), primary_key=True)
+    first_name = db.Column(db.String(64), nullable=False)
+    last_name = db.Column(db.String(64), nullable=False)
+    email_address = db.Column(db.String(64), nullable=False)
+    password = db.Column(db.String(64), nullable=False)
+    phone_number = db.Column(db.String(64), nullable=False)
+    address = db.Column(db.String(64))
+    city = db.Column(db.String(64))
+    street = db.Column(db.String(64))
+    state = db.Column(db.String(64))
+    title = db.Column(db.String(64), nullable=False)
+    active = db.Column(db.Boolean, nullable=False)
